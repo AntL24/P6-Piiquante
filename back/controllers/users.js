@@ -14,11 +14,10 @@ async function saveNewUser(req, res) {
     const user = new User({email, password: hashedPassword});
     await user.save();
     res.status(201).send({message: "User created"})
-    } catch (error) {
-        res.status(409).send({message: "Error creating user: " + error})
+    } catch (err) {
+        res.status(409).send({message: "Error creating user: " + err})
     }
 }
-
 
 //////////////////////////
 //Fonction pour le login//
@@ -27,25 +26,22 @@ async function loginUser(req, res) {
     try {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email})
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (isPasswordValid) {
-        const token = createToken(email)
-        res.status(200).send({userId: user?._id, token: token})
+    if (!isPasswordValid) {
+        res.status(401).send({message: "Invalid credentials"});
     }
-    //Refactoring : pas besoin de else.
-    //Une fois qu'un res.send est appelé, le code ne continue pas après.
-    res.status(401).send({message: "Login failed, please check your password"})
-    } catch (error) {
-        res.status(500).send({message: "Error logging in, email not found:" + error})
+    const token = createToken(email)
+    res.status(200).send({userId: user?._id, token: token})
+    } catch (err) {
+    res.status(500).send({message: "Error logging in: " + err})
     }
 }
-
 
 function createToken(email) {
     const jwtPassword = process.env.JWT_PASSWORD;
-    return jwt.sign({email: email}, jwtPassword, {expiresIn: "24h"}); //return le token
+    return jwt.sign({email: email}, jwtPassword, {expiresIn: "24h"}); //return token
 }
-
 
 //Fonction pour encrypter le mot de passe
 function passwordHasher(password) {
