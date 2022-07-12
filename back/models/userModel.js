@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 require ("../mongo");
 
 //Mongoose fonctionne avec des schémas.
-//On crée un schéma pour exiger des utilisateurs un email unique et un mot de passe assez compliqué de minimum 8 caractères
+//On crée un schéma pour exiger des utilisateurs un email unique et un mot de passe de minimum 8 caractères
 //avec au moins un chiffre et un caractère spécial (caractères non-verbaux valant caractère spécial).
 const userSchema = new mongoose.Schema({
     //userId: {type: mongoose.Schema.Types.ObjectId},
