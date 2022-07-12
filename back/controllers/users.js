@@ -1,6 +1,6 @@
 
 
-const {User} = require('../mongo');//Pour dire que c'est un objet, soit on met des acollades, soit on met .User à la fin
+const {User} = require('../models/userModel')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -25,22 +25,24 @@ async function saveNewUser(req, res) {
 async function loginUser(req, res) {
     try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email})
-
+    const user = await User.findOne({email: email})
+    const userId = user._id
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-        res.status(401).send({message: "Invalid credentials"});
+        return res.status(401).send({message: "Invalid credentials"});
     }
-    const token = createToken(email)
-    res.status(200).send({userId: user?._id, token: token})
+    console.log("userId1", userId)
+    const token = createToken(userId)
+    res.status(200).send({userId : user._id, token : token})
     } catch (err) {
     res.status(500).send({message: "Error logging in: " + err})
     }
 }
 
-function createToken(email) {
+ function createToken(userId, email) {
+    console.log("userid2", userId)
     const jwtPassword = process.env.JWT_PASSWORD;
-    return jwt.sign({email: email}, jwtPassword, {expiresIn: "24h"}); //return token
+    return jwt.sign({userId: userId}, /*Callback is not a function {email: email},*/ jwtPassword, {expiresIn: "24h"}); //return token
 }
 
 //Fonction pour encrypter le mot de passe

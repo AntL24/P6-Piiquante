@@ -4,6 +4,8 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require("cors"); //Cors intervient entre la requête et la réponse pour ajouter des headers.
+const helmet = require('helmet');
+
 
 //////////////
 //Middleware//
@@ -12,5 +14,11 @@ const cors = require("cors"); //Cors intervient entre la requête et la réponse
 app.use(cors());
 //express.json permet de récupérer les données envoyées dans le body de la requête.
 app.use(express.json());
+//Helmet help us secure our express server 
+app.use(helmet(
+    {crossOriginResourcePolicy: false,
+    /*crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: false*/}
+    ));
 
 module.exports = {app, express};

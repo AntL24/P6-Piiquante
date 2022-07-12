@@ -1,23 +1,8 @@
 const mongoose = require("mongoose");
 const { unlink } = require("fs/promises"); //using fs-promises because it is called within promises, so it is asynchronous code.
+const Product = require("../models/sauceModel")
 
-const productSchema = new mongoose.Schema({
-    userId: String,
-    name: String,
-    manufacturer: String,
-    description: String,
-    mainPepper : String,
-    imageUrl: String,
-    heat: Number,
-    likes: Number,
-    dislikes: Number,
-    usersLiked: [String],
-    usersDisliked: [String]
-    }
-)
-const Product = mongoose.model("Product", productSchema);
-
-//Function sendSauces will send a list of products (if header and token are valid, otherwise it will return an error message.)
+//Function sendSauces will send a list of products
 function sendSauces(req, res){
     console.log("Sending sauces...");
     Product.find({})
@@ -31,7 +16,7 @@ function getSauce( req, res){
     return Product.findById(id)
 }
 
-function sendSauceCorrespondingToId( req, res) {
+function sendSauceCorrespondingToId(req, res) {
     console.log("Sending selected Sauce...");
 
     getSauce(req, res)   
@@ -53,8 +38,6 @@ function deleteSauce( req, res){
 
 function modifySauce(req, res) {
     const { params : { id } } = req;
-    //Boolean variable with lax equality to manage the case where img do not exist anymore on the server side
-    // == ?
     const isThereANewImage = req.file != null 
     const payload = createPayload(isThereANewImage, req)
     //UPDATING DATABASE
@@ -88,7 +71,7 @@ function manageUpdateResponse(product, res){
         return res.status(404).send({message : "No material found in DB to update"})
     }
     console.log("Updating", product)
-    //Promise.resolve allow use to use a .then to pass product after the response
+    //Promise.resolve allow us to use a .then to pass product after the response
     return Promise.resolve(res.status(200).send(product)).then(() => product)
 }
  //function to create imageUrl for new sauce
@@ -126,13 +109,13 @@ function makeSauces(req, res){
 
 function likeSauce (req, res) {
     const {like, userId} = req.body;
-
-    if (![0, -1, 1].includes(like)) return res.status(403).send({message : "Like request invalid"});
+    //
+    if (![0, -1, 1].includes(like)) return res.status(403).send({message : "Like request is invalid : incorrect value"});
 
     getSauce(req, res)
     .then((product) => updateVoteCounter(product, like, userId, res))
-    .then((pr) => pr.save() )
-    .then((prod) => manageUpdateResponse(prod, res))
+    .then((product) => product.save() )
+    .then((product) => manageUpdateResponse(product, res))
     .catch((err) =>  res.status(500).send(err));
 }
 
@@ -144,7 +127,7 @@ function updateVoteCounter( product, like, userId, res){
 function setVoteToZero(product, userId, res) {
     const { usersLiked, usersDisliked } = product
 
-    //On gère les cas d'erreur avant tout autre chose.
+    //On gère les cas d'erreur avant toute autre chose.
     if ([usersLiked, usersDisliked].every((arr) => arr.includes(userId)))
     //Forcing catch with Promise.reject
     return Promise.reject("A given user cannot register both dislikes and likes on the same product")
@@ -160,18 +143,19 @@ function setVoteToZero(product, userId, res) {
         --product.dislikes;
         product.usersDisliked = product.usersDisliked.filter((id) => id !== userId)
     }
+    //On renvoie le produit.
     return product
 }
 
 function incrementVoteCounter(product, userId, like){
     const {usersLiked, usersDisliked} = product;
-
+    //Is like equal to one ? If yes, usersArray = usersLiked, if not it's equal to usersDisliked.
     const usersArray = like === 1 ? usersLiked : usersDisliked;
+    //If userId is already inside the array, product is returned immediately.
     if (usersArray.includes(userId)) return product
+    //If not, we push UserId in the array, and we increment the product likes (or dislikes) before returning.
     usersArray.push(userId);
-
     like === 1 ? ++product.likes : ++product.dislikes;
     return product;
 }
-
 module.exports = {manageUpdateResponse, getSauce, sendSauces, makeSauces, sendSauceCorrespondingToId, deleteSauce, modifySauce, likeSauce}
