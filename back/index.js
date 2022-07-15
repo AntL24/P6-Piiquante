@@ -1,9 +1,13 @@
 const {app, express} = require("./server");
 const {saucesRouter} = require("./routers/sauces.router");//We're using a router instance to set a default path.
 const {authRouter} = require("./routers/auth.router");
-const bodyParser = require("body-parser");
 const port = 3000;
 const path = require('path');
+const bodyParser = require("body-parser");
+
+////////////////////
+//Back server test//
+app.get ("/", (req, res) => res.send("Hello World!"));
 
 ///////////////////////
 //Database connection//

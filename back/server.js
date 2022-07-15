@@ -16,9 +16,7 @@ app.use(cors());
 app.use(express.json());
 //Helmet help us secure our express server 
 app.use(helmet(
-    {crossOriginResourcePolicy: false,
-    /*crossOriginEmbedderPolicy: false,
-    crossOriginOpenerPolicy: false*/}
+    {crossOriginResourcePolicy: false},
     ));
 
 module.exports = {app, express};

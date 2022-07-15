@@ -21,7 +21,7 @@ saucesRouter.get("/", sendSauces);
 saucesRouter.post("/", upload.single("image"), makeSauces);
 saucesRouter.get("/:id", sendSauceCorrespondingToId);
 saucesRouter.delete("/:id", matchingUserID, deleteSauce);
-saucesRouter.put("/:id", matchingUserID, upload.single("image"), modifySauce)
+saucesRouter.put("/:id", matchingUserID, upload.single("image"), modifySauce);
 //Pour modifier une image, si matchingUserID est en premier, j'obtiens "undefined" dans mes console.log(), mais tout marche sans erreur.
 //Si matchingUserID vient après upload.single("image"), la modification d'image fonctionne, mais j'obtiens une error :
 //"Cannot update [Error: ENOENT: no such file or directory, unlink +"chemin de l'ancienne image", qui a pourtant bien été supprimée.
