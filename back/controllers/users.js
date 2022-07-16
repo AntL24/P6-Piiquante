@@ -4,9 +4,9 @@ const {User} = require('../models/userModel')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-///////////////////////////
-//Fonction pour le signup//
-///////////////////////////
+///////////////////
+//Signup function//
+///////////////////
 async function saveNewUser(req, res) {
     try {
     const { email, password } = req.body;
@@ -18,10 +18,9 @@ async function saveNewUser(req, res) {
         res.status(409).send({message: "Error creating user: " + err})
     }
 }
-
-//////////////////////////
-//Fonction pour le login//
-//////////////////////////
+//////////////////
+//Login function//
+//////////////////
 async function loginUser(req, res) {
     try {
     const { email, password } = req.body;
@@ -31,27 +30,24 @@ async function loginUser(req, res) {
     if (!isPasswordValid) {
         return res.status(401).send({message: "Invalid credentials"});
     }
-    console.log("userId1", userId)
     const token = createToken(userId)
     res.status(200).send({userId : user._id, token : token})
     } catch (err) {
     res.status(500).send({message: "Error logging in: " + err})
     }
 }
-
- function createToken(userId, email) {
-    console.log("userid2", userId)
+//Making token out of current userId and our jwtPassword.
+function createToken(userId) {
     const jwtPassword = process.env.JWT_PASSWORD;
-    return jwt.sign({userId: userId}, /*Callback is not a function {email: email},*/ jwtPassword, {expiresIn: "24h"}); //return token
+    return jwt.sign({userId: userId}, jwtPassword, {expiresIn: "24h"}); //return token
 }
 
-//Fonction pour encrypter le mot de passe
+//Function to encrypt password.
 function passwordHasher(password) {
     const saltRounds = 10;
     return bcrypt.hash(password, saltRounds)
 }
 
-//On exporte pour pouvoir l'utiliser dans le fichier index.js
 module.exports = {saveNewUser, loginUser};
 
 

@@ -7,7 +7,7 @@ const bodyParser = require("body-parser");
 
 ////////////////////
 //Back server test//
-app.get ("/", (req, res) => res.send("Hello World!"));
+app.get ("/", (res) => res.send("Hello World!"));
 
 ///////////////////////
 //Database connection//
@@ -23,6 +23,7 @@ app.use("/api/auth", authRouter)
 //Listen//
 //Authorization to see images folder on back server.
 app.use("/images", express.static(path.join(__dirname, "images")));
+
 //On demande à l'app d'écouter sur le port 3000, et de lancer un message
 app.listen(port, () => {
     console.log(`App is listening at http://localhost:${port}`)

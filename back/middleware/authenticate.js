@@ -12,7 +12,6 @@ function authenticateUser(req, res, next){
     jwt.verify(token, process.env.JWT_PASSWORD, (err) => {
         //Err will intercept bad tokens and expired tokens.
         if (err) return res.status(403).send({message : "Token invalid" + err});
-        console.log("Token is valid.");
         next();
     })
 }

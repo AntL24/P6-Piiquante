@@ -1,5 +1,4 @@
-/*const mongoose = require('mongoose');
-
+const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
     userId: String,
@@ -16,5 +15,4 @@ const productSchema = new mongoose.Schema({
     }
 )
 const Product = mongoose.model('Product', productSchema);
-//module.exports = mongoose.model(productSchema);
-module.exports = Product;*/
+module.exports = {Product};
