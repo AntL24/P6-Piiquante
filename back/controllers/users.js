@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 async function saveNewUser(req, res) {
     try {
     const { email, password } = req.body;
-    const hashedPassword = await passwordHasher(password);
+    const hashedPassword = await passwordHasher(password);//Storing user information with a hashed password.
     const user = new User({email, password: hashedPassword});
     await user.save();
     res.status(201).send({message: "User created"})
